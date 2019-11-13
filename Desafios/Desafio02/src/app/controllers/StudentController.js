@@ -8,9 +8,11 @@ class StudentController {
       email: Yup.string()
         .email()
         .required(),
-      passwordUser: Yup.string()
-        .required()
-        .min(6),
+      age: Yup.number()
+        .integer()
+        .min(2),
+      weight: Yup.number().required(),
+      height: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -25,36 +27,39 @@ class StudentController {
       return res.status(400).json({ error: 'Student already exists.' });
     }
 
-    const { id, name, email, provider } = await Student.create(req.body);
-    return res.json({
-      id,
-      name,
-      email,
-      provider,
-    });
+    const student = await Student.create(req.body);
+    return res.json(student);
   }
 
   async update(req, res) {
     const schema = Yup.object().shape({
+      id: Yup.number()
+        .integer()
+        .required(),
       name: Yup.string(),
       email: Yup.string().email(),
+      age: Yup.number()
+        .integer()
+        .min(2),
+      weight: Yup.number(),
+      height: Yup.number(),
       oldPassword: Yup.string().min(6),
-      password: Yup.string()
-        .min(6)
-        .when('oldPassword', (oldPassword, field) =>
-          oldPassword ? field.required() : field
-        ),
-      confirmPassword: Yup.string().when('password', (password, field) =>
-        password ? field.required().oneOf([Yup.ref('password')]) : field
-      ),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails' });
     }
-    const { email, oldPassword } = req.body;
 
-    const student = await Student.findByPk(req.studentId);
+    const student = await Student.findByPk(req.body.id);
+
+    if (!student) {
+      return res.status(400).json({ error: 'Student is not exists.' });
+    }
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(401).json({ error: 'New email was not entered.' });
+    }
 
     if (email !== student.email) {
       const studentExists = await Student.findOne({ where: { email } });
@@ -64,17 +69,9 @@ class StudentController {
       }
     }
 
-    if (oldPassword && !(await student.checkPassword(oldPassword))) {
-      return res.status(401).json({ error: 'Password does not match.' });
-    }
+    const studentUpdate = await student.update(req.body);
 
-    const { id, name, provider } = await student.update(req.body);
-    return res.json({
-      id,
-      name,
-      email,
-      provider,
-    });
+    return res.json(studentUpdate);
   }
 }
 

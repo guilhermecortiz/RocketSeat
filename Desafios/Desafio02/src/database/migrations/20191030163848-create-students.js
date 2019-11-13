@@ -1,5 +1,3 @@
-// nome, email, idade, peso e altura
-
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('students', {
@@ -18,21 +16,16 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      idade: {
+      age: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      peso: {
-        type: Sequelize.FLOAT,
+      weight: {
+        type: Sequelize.DOUBLE,
         allowNull: false,
       },
-      altura: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
-      },
-      provider: {
-        type: Sequelize.STRING,
-        defaultValue: false,
+      height: {
+        type: Sequelize.DOUBLE,
         allowNull: false,
       },
       created_at: {
