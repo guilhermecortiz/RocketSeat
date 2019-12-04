@@ -45,6 +45,7 @@ class UserController {
       confirmPassword: Yup.string().when('password', (password, field) =>
         password ? field.required().oneOf([Yup.ref('password')]) : field
       ),
+      avatar_id: Yup.number().integer(),
     });
 
     if (!(await schema.isValid(req.body))) {
