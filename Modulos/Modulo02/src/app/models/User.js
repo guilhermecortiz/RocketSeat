@@ -20,15 +20,15 @@ class User extends Model {
 
     this.addHook('beforeSave', async user => {
       if (user.password) {
-        console.log('passou aqui');
         user.password_hash = await bcrypt.hash(user.password, 8);
       }
     });
+
     return this;
   }
 
-  static associete(models) {
-    this.belongsTo(models.File, { foreignKey: 'avatar_id' });
+  static associate(models) {
+    this.belongsTo(models.File, { foreignKey: 'avatar_id', as: 'avatar' });
   }
 
   checkPassword(password) {
